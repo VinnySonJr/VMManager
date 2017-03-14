@@ -17,44 +17,46 @@ namespace VMManager
             int[] pageNumber = new int[8];
             int[] offset = new int[8];
 
-            readAddresses(addresses);
+            addresses = readAddresses();
 
-            //show the content of addresses
+            //show the logical addresses
+            Console.WriteLine("Showing the content of the logical address text file");
+            Console.WriteLine("----------------------------------------------------");
+            Console.WriteLine("Address        Binary        PageNumber    Offset ");
+            Console.WriteLine("-------        ------        ----------    ------ ");
             foreach (var address in addresses)
             {
-                Console.WriteLine(address);
-            }
-
-            //show the content of addresses in bits
-            stackOfBinaries = DecToBin(64);
-            Console.WriteLine(stackOfBinaries.Count);
-            int i = 0;
-            while (i<stackOfBinaries.Count)
-            {
-                if (i < 8)
+                stackOfBinaries = DecToBin(address);
+                int i = 0;
+                while (i < stackOfBinaries.Count)
                 {
-                    pageNumber[i] = stackOfBinaries.ToArray()[i];
-                }
-                else
-                    offset[i - 8] = stackOfBinaries.ToArray()[i];
+                    if (i < 8)
+                    {
+                        pageNumber[i] = stackOfBinaries.ToArray()[i];
+                    }
+                    else
+                        offset[i - 8] = stackOfBinaries.ToArray()[i];
 
-                i++;
+                    i++;
+                }
+
+                Console.WriteLine(address + "    " + bitsToString(stackOfBinaries.ToArray(), 16)
+                    + "    " + bitsToString(pageNumber, 8) + "    " + bitsToString(offset, 8));
             }
 
-            Console.Write("Page number: ");
-            bitsToString(pageNumber,8); 
-            Console.Write("Offset: ");
-            bitsToString(offset, 8);
         }
 
-        public static void readAddresses(List<int> addresses)
+        public static List<int> readAddresses()
         {
+            List<int> addresses = new List<int>();
             string[] lines = File.ReadAllLines(@"C:\Users\Augustin Nshimiyiman\Google Drive\OCClasses\Spring 2017\Operating Systems\Assignment\Virtual Memory\addresses.txt");
 
             foreach (var line in lines)
             {
                 addresses.Add(int.Parse(line));
             }
+
+            return addresses;
         }
 
         public static Stack<int> DecToBin(int decimalAddress)
@@ -76,13 +78,15 @@ namespace VMManager
             return stackOfBinaries;
         }
 
-        public static void bitsToString(int [] arr, int size)
+        public static string bitsToString(int [] arr, int size)
         {
+            string text = "";
             for(int counter=0; counter <size; counter++)
             {
-                Console.Write(arr[counter]);
+                text=text+arr[counter];
             }
-            Console.WriteLine();
+
+            return text;
         }
 
     }
